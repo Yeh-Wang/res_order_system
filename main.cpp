@@ -1,6 +1,17 @@
 #include <ostream>
 #include "header.h"
 
+struct menuList;       //菜单结构体
+struct orderList;      //点菜列表
+class consumerEntity;  //消费者类
+class cashierEntity;   //收银员类
+class cooksEntity;     //厨师类
+class waiterEntity;    //服务员类
+
+vector<menuList> list;  //所有菜品数据
+vector<consumerEntity> allConsumer; //所有用户数据
+map<int, int> allTable;   //所有座位信息
+
 //菜单结构体
 typedef struct menuList {
     int dishCode;  //餐品编号
@@ -43,15 +54,44 @@ public:
         this->conNumber = 0;
     }
 
+    consumerEntity makeOrder(consumerEntity consumer) {
+        cout << " 编号   " << " 菜名   " << "    价格   " << endl;
+        for (auto &i: list) {
+            cout << i.dishCode << "       " << i.dishName << "     " << i.dishPrice << endl;
+        }
+        vector<order> new_order;  //用户菜单
+        double amount = 0;
+        while (true) {
+            cout << "Please select the dishes you want to eat:(-1 EXIT)\n";
+            int code = 0;
+            cin >> code;
+            if (code == -1) {
+                break;
+            }
+            cout << "Please enter the quantity you need:\n";
+            int count = 0;
+            cin >> count;
+            order forOrder;
+            forOrder.dishOrder = list[code - 1];
+            amount = amount + list[code - 1].dishPrice * count;
+            forOrder.dishCount = count;
+            new_order.push_back(forOrder);
+        }
+        consumer.setConOrder(new_order);
+        consumer.setTotalMoney(amount);
+        allConsumer.push_back(consumer);
+        return consumer;
+    }
+
     friend ostream &operator<<(ostream &os, const consumerEntity &entity) {
-        os<<"\nUser number: "<<entity.conCode<<endl;
-        os<<"User table: "<<entity.conTable<<"\t\t Number of diners："<<entity.conNumber<<endl;
-        os<<"dish name "<<"\t    amount \n";
+        os << "\nUser number: " << entity.conCode << endl;
+        os << "User table: " << entity.conTable << "\t\t Number of diners：" << entity.conNumber << endl;
+        os << "dish name " << "\t    amount \n";
         for (auto &j: entity.conOrder) {
             os << j.dishOrder.dishName << "\t\t" << j.dishCount << endl;
         }
-        os<<"total money: "<<entity.totalMoney<<endl;
-        os<<endl;
+        os << "total money: " << entity.totalMoney << endl;
+        os << endl;
         return os;
     }
 
@@ -188,17 +228,12 @@ public:
     }
 };
 
-void init_menu();  //初始化菜单
+void init_menu();  //初始化菜单和座位
 void show_panel();  //总展示面板
-void consumer_panel(consumerEntity con); //消费者展示面板
 void menu_entity(); //菜单录入
-
-vector<menuList> list;  //所有菜品数据
-vector<consumerEntity> allConsumer; //所有用户数据
 
 int main() {
     init_menu();
-//    menu_entity(list);
     show_panel();
     return 0;
 }
@@ -229,6 +264,16 @@ void init_menu() {
     list.push_back(dish_4);
     list.push_back(dish_5);
     list.push_back(dish_6);
+    allTable.insert(map<int, int>::value_type(1, 0));
+    allTable.insert(map<int, int>::value_type(2, 0));
+    allTable.insert(map<int, int>::value_type(3, 0));
+    allTable.insert(map<int, int>::value_type(4, 0));
+    allTable.insert(map<int, int>::value_type(5, 0));
+    allTable.insert(map<int, int>::value_type(6, 0));
+    allTable.insert(map<int, int>::value_type(7, 0));
+    allTable.insert(map<int, int>::value_type(8, 0));
+    allTable.insert(map<int, int>::value_type(9, 0));
+    allTable.insert(map<int, int>::value_type(10, 0));
 }
 
 void menu_entity() {
@@ -265,15 +310,39 @@ void show_panel() {
         cin >> selectNumber;
         if (selectNumber == 1) {
             consumerEntity consumer;
-            default_random_engine e;
-            uniform_int_distribution<int> u(0, 100);
-            e.seed(time(nullptr));
-            consumer.setConCode(u(e));
-            cout<<"Please enter number of diners:\n";
-            int number;
-            cin>>number;
+//            default_random_engine e;
+//            uniform_int_distribution<int> u(0, 100);
+//            e.seed(time(nullptr));
+//            consumer.setConCode(u(e));
+            int look = allTable.size();
+            int j;
+            for (j = 0; j < look; j++) {
+                auto pos = allTable.find(j + 1);
+                if(pos->second==0){
+                    break;
+                }
+            }
+            if(j==look){
+                cout<<"There is no seat now!\n";
+                continue;
+            }
+            for (int i = 0; i < look; i++) {
+                auto pos = allTable.find(i + 1);
+                if (pos->second == 0) {
+                    cout << pos->first << " ";
+                }
+            }
+            cout << "\nPlease select the seat you would like to eat:\n";
+            int tableNumber;   //消费者座位号
+            cin >> tableNumber;
+            consumer.setConTable(tableNumber);
+            allTable[tableNumber] = 1;
+            cout << "Please enter number of diners:\n";
+            int number;   //消费者人数
+            cin >> number;
             consumer.setConNumber(number);
-            consumer_panel(consumer);
+            consumer = consumer.makeOrder(consumer);   //点餐
+            cout << consumer;
         } else if (selectNumber == 2) {
             system("cls");
             cout << "hello";
@@ -294,32 +363,3 @@ void show_panel() {
         }
     } while (true);
 };
-
-void consumer_panel(consumerEntity con) {
-    cout << " 编号   " << " 菜名   " << "    价格   " << endl;
-    for (auto &i: list) {
-        cout << i.dishCode << "       " << i.dishName << "     " << i.dishPrice << endl;
-    }
-    vector<order> new_order;  //用户菜单
-    double amount = 0;
-    while (true) {
-        cout << "Please select the dishes you want to eat:(-1 EXIT)\n";
-        int code = 0;
-        cin >> code;
-        if (code == -1) {
-            break;
-        }
-        cout << "Please enter the quantity you need:\n";
-        int count = 0;
-        cin >> count;
-        order forOrder;
-        forOrder.dishOrder = list[code - 1];
-        amount = amount + list[code - 1].dishPrice*count;
-        forOrder.dishCount = count;
-        new_order.push_back(forOrder);
-    }
-    con.setConOrder(new_order);
-    con.setTotalMoney(amount);
-    allConsumer.push_back(con);
-    cout<<con;
-}
