@@ -2,31 +2,31 @@
 #include "header.h"
 
 //data struct
-struct menuList;       //ï¿½Ëµï¿½ï¿½á¹¹ï¿½ï¿½
-struct orderList;      //ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
-class consumerEntity;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-class cashierEntity;   //ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
-class cooksEntity;     //ï¿½ï¿½Ê¦ï¿½ï¿½
-class waiterEntity;    //ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
+struct menuList;       //²Ëµ¥½á¹¹Ìå
+struct orderList;      //µã²ËÁÐ±í
+class consumerEntity;  //Ïû·ÑÕßÀà
+class cashierEntity;   //ÊÕÒøÔ±Àà
+class cooksEntity;     //³øÊ¦Àà
+class waiterEntity;    //·þÎñÔ±Àà
 
 //global variable
-vector<menuList> list;  //ï¿½ï¿½ï¿½Ð²ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
-vector<consumerEntity> allConsumer; //Î´ï¿½Í²Íµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-vector<consumerEntity> alreadyConsumer; //ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-map<int, int> allTable;   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Ï¢
-vector<orderList > finishedDishes;  //ï¿½ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½Ð²ï¿½Æ·
+vector<menuList> list;  //ËùÓÐ²ËÆ·Êý¾Ý
+vector<consumerEntity> allConsumer; //Î´¾Í²ÍµÄËùÓÐÏû·ÑÕßÊý¾Ý
+vector<consumerEntity> alreadyConsumer; //ÒÑ¾­½áÕËµÄÏû·ÑÕßÊý¾Ý
+map<int, int> allTable;   //ËùÓÐ×ùÎ»ÐÅÏ¢
+vector<orderList > finishedDishes;  //ÒÑÍê³ÉµÄËùÓÐ²ËÆ·
 
 //global functions
-void init_menu();  //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½Î»
-void show_panel();  //ï¿½ï¿½Õ¹Ê¾ï¿½ï¿½ï¿½
-void menu_entity(); //ï¿½Ëµï¿½Â¼ï¿½ï¿½
-void show_all_orders();  //Õ¹Ê¾ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+void init_menu();  //³õÊ¼»¯²Ëµ¥ºÍ×ùÎ»
+void show_panel();  //×ÜÕ¹Ê¾Ãæ°å
+void menu_entity(); //²Ëµ¥Â¼Èë
+void show_all_orders();  //Õ¹Ê¾ËùÓÐ¶©µ¥ÐÅÏ¢
 
-//ï¿½Ëµï¿½ï¿½á¹¹ï¿½ï¿½
+//²Ëµ¥½á¹¹Ìå
 typedef struct menuList {
-    int dishCode;  //ï¿½ï¿½Æ·ï¿½ï¿½ï¿½
-    string dishName;  //ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
-    double dishPrice; //ï¿½ï¿½Æ·ï¿½Û¸ï¿½
+    int dishCode;  //²ÍÆ·±àºÅ
+    string dishName;  //²ÍÆ·Ãû³Æ
+    double dishPrice; //²ÍÆ·¼Û¸ñ
 
     menuList() {
         this->dishCode = 0;
@@ -34,15 +34,15 @@ typedef struct menuList {
         this->dishPrice = 0;
     }
 } menu;
-//ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
+//µã²ËÁÐ±í
 typedef struct orderList {
-    menu dishOrder;  //ï¿½ï¿½Æ·ï¿½ï¿½Ï¢
-    int dishCount = 0;  //ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½
-    string status;   //ï¿½Ç·ï¿½ï¿½ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½
+    menu dishOrder;  //²ÍÆ·ÐÅÏ¢
+    int dishCount = 0;  //²ÍÆ·ÊýÁ¿
+    string status;   //ÊÇ·ñÍê³É   ´ý×ö  ÒÑ×ö
 
     orderList() {
         this->dishCount = 0;
-        this->status = "ï¿½ï¿½ï¿½ï¿½";
+        this->status = "´ý×ö";
     }
 
     void setStatus(const string& statusL) {
@@ -51,30 +51,31 @@ typedef struct orderList {
     }
 } order;
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//Ïû·ÑÕßÀà
 class consumerEntity {
 private:
-    int conCode;   //ï¿½Ã»ï¿½ï¿½ï¿½ï¿½
-    int conTable;  //ï¿½Ã»ï¿½ï¿½ï¿½Î»
-//    string conName;
-    vector<orderList> conOrder;  //ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
-    double totalMoney;   //ï¿½ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½
-    string conRemark;  //ï¿½Ã»ï¿½ï¿½ï¿½×¢
-    int conNumber;  //ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½
+    int conCode;   //ÓÃ»§±àºÅ
+    int conTable;  //ÓÃ»§²ÍÎ»
+    int conStatus; //³øÊ¦±êÊ¶
+    vector<orderList> conOrder;  //ÓÃ»§¶©µ¥
+    double totalMoney;   //¶©µ¥×Ü¶î
+    string conRemark;  //ÓÃ»§±¸×¢
+    int conNumber;  //ÓÃ²ÍÈËÊý
 public:
     consumerEntity() {
         this->conCode = 0;
         this->conTable = 0;
+        this->conStatus=0;
         this->totalMoney = 0;
         this->conNumber = 0;
     }
 
     static consumerEntity makeOrder(consumerEntity consumer) {
-        cout << " ï¿½ï¿½ï¿½   " << " ï¿½ï¿½ï¿½ï¿½   " << "    ï¿½Û¸ï¿½   " << endl;
+        cout << " ±àºÅ   " << " ²ËÃû   " << "    ¼Û¸ñ   " << endl;
         for (auto &i: list) {
             cout << i.dishCode << "       " << i.dishName << "     " << i.dishPrice << endl;
         }
-        vector<order> new_order;  //ï¿½Ã»ï¿½ï¿½Ëµï¿½
+        vector<order> new_order;  //ÓÃ»§²Ëµ¥
         double amount = 0;
         while (true) {
             cout << "Please select the dishes you want to eat:(-1 EXIT)\n";
@@ -100,7 +101,7 @@ public:
 
     friend ostream &operator<<(ostream &os,  consumerEntity &entity) {
         os << "\nUser number: " << entity.conCode << endl;
-        os << "User table: " << entity.conTable << "\t\t Number of dinersï¿½ï¿½" << entity.conNumber << endl;
+        os << "User table: " << entity.conTable << "\t\t Number of diners£º" << entity.conNumber << endl;
         os << "dish name " << "\t    amount \n";
         for (auto &j: entity.conOrder) {
             os << j.dishOrder.dishName << "\t\t" << j.dishCount << endl;
@@ -112,7 +113,7 @@ public:
 
     void outOrder(){
         for (auto & i : conOrder) {
-            cout<<i.dishOrder.dishCode<<". "<<i.dishOrder.dishName<<"\t"<<i.dishCount<<"ï¿½ï¿½\t"<<i.status<<endl;
+            cout<<i.dishOrder.dishCode<<". "<<i.dishOrder.dishName<<"\t"<<i.dishCount<<"·Ý\t"<<i.status<<endl;
         }
         cout<<endl;
     }
@@ -123,6 +124,14 @@ public:
 
     void setConCode(int conCodes) {
         consumerEntity::conCode = conCodes;
+    }
+
+    int getConStatus() const {
+        return conStatus;
+    }
+
+    void setConStatus(int conStatus) {
+        consumerEntity::conStatus = conStatus;
     }
 
     int getConTable()  {
@@ -166,11 +175,11 @@ public:
     }
 };
 
-//ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
+//ÊÕÒøÔ±Àà
 class cashierEntity {
 private:
-    int cashCode;   //ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½
-    vector<consumerEntity> consumerA;  //ï¿½Ë¿Í±ï¿½ï¿½
+    int cashCode;   //ÊÕÒøÔ±±àºÅ
+    vector<consumerEntity> consumerA;  //¹Ë¿Í±àºÅ
 public:
     cashierEntity() {
         this->cashCode = 0;
@@ -193,10 +202,10 @@ public:
     }
 };
 
-//ï¿½ï¿½Ê¦ï¿½ï¿½
+//³øÊ¦Àà
 class cooksEntity {
 private:
-    int cookCode;   //ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½
+    int cookCode;   //³øÊ¦±àºÅ
 public:
     cooksEntity() {
         this->cookCode = 0;
@@ -204,23 +213,23 @@ public:
 
     static void viewOrders(){
         show_all_orders();
-        cout<<"Please select the seat number to complete the meal:\n";
+        cout<<"Please select the seat number to complete the meal:(-1 EXIT)\n";
         int tableNumber;
         cin>>tableNumber;
         cout<<endl;
-        for (int i=0 ;i<allConsumer.size();i++) {
-            if(allConsumer[i].getConTable()==tableNumber){
-                allConsumer[i].outOrder();
-                doDishes(allConsumer[i]);
+        for (auto & i : allConsumer) {
+            if(i.getConTable()==tableNumber){
+                i.outOrder();
+                doDishes(i);
                 int j=0;
-                for(j=0;j<allConsumer[i].getConOrder().size();j++){
-                    if(allConsumer[i].getConOrder()[j].status=="ï¿½ï¿½ï¿½ï¿½"){
+                for(j=0;j<i.getConOrder().size();j++){
+                    if(i.getConOrder()[j].status=="´ý×ö"){
                         break;
                     }
                 }
-                if(j==allConsumer[i].getConOrder().size()){
-                    auto iter=allConsumer.erase(allConsumer.begin()+i);
-                    alreadyConsumer.push_back(allConsumer[i]);
+                if(j==i.getConOrder().size()){
+                    i.setConStatus(1);
+                    alreadyConsumer.push_back(i);
                 }
             }
         }
@@ -231,14 +240,15 @@ public:
             cout<<"Please enter the serial number of the finished dish:(-1 EXIT)\n";
             int now_code;
             cin>>now_code;
-            if(now_code==-1){
-                break;
-            }
-            for (auto & i : consumer.getConOrder()) {
-                if(i.dishOrder.dishCode==now_code){
-                    i.setStatus("ï¿½ï¿½ï¿½ï¿½");
-                    finishedDishes.push_back(i);
+            if(now_code!=-1){
+                for (auto & i : consumer.getConOrder()) {
+                    if(i.dishOrder.dishCode==now_code){
+                        i.setStatus("ÒÑ×ö");
+                        finishedDishes.push_back(i);
+                    }
                 }
+            }else{
+                break;
             }
         }
     }
@@ -248,7 +258,6 @@ public:
         for(auto & i : finishedDishes){
             cout<<i.dishOrder.dishName<<"\t"<<i.dishCount<<endl;
         }
-        cout<<alreadyConsumer[0];
     }
 
     int getCookCode()  {
@@ -260,13 +269,13 @@ public:
     }
 };
 
-//ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½
+//·þÎñÔ±Àà
 class waiterEntity {
 private:
-    int waiterCode;  //ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½
-    int conCode;  //Ä¿ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½
-    vector<menu> addDishes;  //ï¿½Ó²ï¿½ï¿½Ð±ï¿½
-    string remarks;  //ï¿½Ã»ï¿½ï¿½ï¿½×¢
+    int waiterCode;  //·þÎñÔ±±àºÅ
+    int conCode;  //Ä¿±êÓÃ»§±àºÅ
+    vector<menu> addDishes;  //¼Ó²ËÁÐ±í
+    string remarks;  //ÓÃ»§±¸×¢
 public:
     waiterEntity() {
         this->conCode = 0;
@@ -308,22 +317,22 @@ int main() {
 void init_menu() {
     menuList dish_1, dish_2, dish_3, dish_4, dish_5, dish_6;
     dish_1.dishCode = 1;
-    dish_1.dishName = "ï¿½ï¿½ï¿½ï¿½ï¿½ì½·";
+    dish_1.dishName = "³´³¯Ìì½·";
     dish_1.dishPrice = 9.9;
     dish_2.dishCode = 2;
-    dish_2.dishName = "ï¿½à½·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+    dish_2.dishName = "Çà½·³´¼¦µ°";
     dish_2.dishPrice = 12.5;
     dish_3.dishCode = 3;
-    dish_3.dishName = "ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½";
+    dish_3.dishName = "¿ÉÀÖ¼¦³á";
     dish_3.dishPrice = 20;
     dish_4.dishCode = 4;
-    dish_4.dishName = "ï¿½Ý½ï¿½ï¿½ï¿½ï¿½";
+    dish_4.dishName = "ÅÝ½·Öí¸Î";
     dish_4.dishPrice = 20;
     dish_5.dishCode = 5;
-    dish_5.dishName = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+    dish_5.dishName = "ºìÉÕÈâ";
     dish_5.dishPrice = 25;
     dish_6.dishCode = 6;
-    dish_6.dishName = "ï¿½ï¿½Õ¢Ð·";
+    dish_6.dishName = "´óÕ¢Ð·";
     dish_6.dishPrice = 55;
     list.push_back(dish_1);
     list.push_back(dish_2);
@@ -400,21 +409,21 @@ void show_panel() {
                 }
             }
             cout << "\nPlease select the seat you would like to eat:\n";
-            int tableNumber;   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+            int tableNumber;   //Ïû·ÑÕß×ùÎ»ºÅ
             cin >> tableNumber;
             consumer.setConTable(tableNumber);
             allTable[tableNumber] = 1;
             cout << "Please enter number of diners:\n";
-            int number;   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            int number;   //Ïû·ÑÕßÈËÊý
             cin >> number;
             consumer.setConNumber(number);
-            consumer = consumerEntity::makeOrder(consumer);   //ï¿½ï¿½ï¿½
+            consumer = consumerEntity::makeOrder(consumer);   //µã²Í
             cout << consumer;
         } else if (selectNumber == 2) {
             system("cls");
             cout << "hello";
         } else if (selectNumber == 3) {
-//            cooksEntity cook;  //ï¿½ï¿½Ê¦Êµï¿½ï¿½ï¿½ï¿½ï¿½
+//            cooksEntity cook;  //³øÊ¦ÊµÌå¶ÔÏó
             while(true){
                 cout<<"1. go for the dishes.\n2. Check out the dishes made today.\n-1. Exit.\n";
                 int code;
@@ -445,6 +454,8 @@ void show_panel() {
 
 void show_all_orders(){
     for (auto & i : allConsumer) {
-        cout<<i;
+        if(i.getConStatus()==0){
+            cout<<i;
+        }
     }
 }
