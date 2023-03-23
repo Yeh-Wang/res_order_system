@@ -12,6 +12,7 @@
 #include <random>
 #include <ctime>
 #include <map>
+#include <iomanip>
 using namespace std;
 
 #endif //RES_ORDER_SYSTEM_HEADER_H
