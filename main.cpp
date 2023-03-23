@@ -8,6 +8,8 @@ class consumerEntity;  //消费者类
 class cashierEntity;   //收银员类
 class cooksEntity;     //厨师类
 class waiterEntity;    //服务员类
+class resOwner;        //餐厅老板
+class systemAdmin;     //系统管理员
 
 //global variable
 vector<menuList> list;  //所有菜品数据
@@ -34,6 +36,13 @@ typedef struct menuList {
         this->dishPrice = 0;
     }
 } menu;
+//酒水结构体
+struct beverage{
+    int bevCode;    //酒水编号
+    string bevName; //名称
+    double bevPrice;//价格
+    int bevStock;   //库存
+};
 //点菜列表
 typedef struct orderList {
     menu dishOrder;  //餐品信息
@@ -306,6 +315,24 @@ public:
     void setRemarks( string &remarksS) {
         waiterEntity::remarks = remarksS;
     }
+};
+
+//餐厅老板
+class resOwner{
+private:
+
+};
+
+//系统管理员
+class systemAdmin{
+private:
+    int code;
+public:
+    systemAdmin(){
+        this->code=0;
+    }
+
+
 };
 
 int main() {
