@@ -25,6 +25,8 @@ vector<orderList> finishedDishes;  //已完成的所有菜品
 void init_menu();  //初始化菜单和座位
 void show_panel();  //总展示面板
 void adminShow();   //系统管理员界面
+void consumerShow(); //用户界面
+void cashierShow();  //收银员界面
 void show_all_orders();  //展示所有订单信息
 void viewAllDishes();//菜单
 
@@ -89,6 +91,7 @@ private:
     int conCode;   //用户编号
     int conTable;  //用户餐位
     int conStatus; //厨师标识,该消费者菜是否做完  0: No  1: Yes
+    int isCheckout; //是否结账
     vector<orderList> conOrder;  //用户订单
     double totalMoney;   //订单总额
     string conRemark;  //用户备注
@@ -98,6 +101,7 @@ public:
         this->conCode = 0;
         this->conTable = 0;
         this->conStatus = 0;
+        this->isCheckout=0;
         this->totalMoney = 0;
         this->conNumber = 0;
     }
@@ -125,7 +129,6 @@ public:
                 cin>>bevCount;
                 order forOrder1;
                 forOrder1.dishOrder = list[code - 1];
-                amount = amount + list[code - 1].dishPrice * count;
                 forOrder1.dishCount = count;
                 forOrder1.bevInfo=bevList[bevCode-1];
                 amount = amount + bevList[bevCode - 1].bevPrice * bevCount;
@@ -135,7 +138,6 @@ public:
             }else{
                 order forOrder;
                 forOrder.dishOrder = list[code - 1];
-                amount = amount + list[code - 1].dishPrice * count;
                 forOrder.dishCount = count;
                 new_order.push_back(forOrder);
             }
@@ -188,6 +190,14 @@ public:
         consumerEntity::conStatus = conStatusL;
     }
 
+    int getIsCheckout(){
+        return isCheckout;
+    }
+
+    void setIsCheckout(int isCheckouts) {
+        consumerEntity::isCheckout = isCheckouts;
+    }
+
     int getConTable() {
         return conTable;
     }
@@ -233,11 +243,45 @@ public:
 class cashierEntity {
 private:
     int cashCode;   //收银员编号
-    vector<consumerEntity> consumerA;  //顾客编号
 public:
     cashierEntity() {
         this->cashCode = 0;
     }
+
+    /**
+     * 通过桌号进行结账
+     * @param tableCode  桌号
+     */
+    static void checkoutByTable(int tableCode){
+        for(auto & i : allConsumer){
+            if(i.getConTable()==tableCode&&i.getIsCheckout()==0){
+                if(i.getTotalMoney()<500){
+                    i.setTotalMoney(i.getTotalMoney()+tableFee*i.getConNumber());
+                    alreadyConsumer.push_back(i);
+                }else{
+                    alreadyConsumer.push_back(i);
+                }
+                cout<<i;
+            }
+        }
+    }
+
+    /**
+     * 统计今天的收入
+     */
+     static double countEarning(){
+         double count=0;
+         for(auto i : alreadyConsumer){
+             count=count+i.getTotalMoney();
+         }
+         return count;
+     }
+
+//     /**
+//      * 统计今天待做和已做的菜品
+//      */
+//     static void showDishesToday(){
+//     }
 
     int getCashCode() {
         return cashCode;
@@ -245,14 +289,6 @@ public:
 
     void setCashCode(int cashCodes) {
         cashierEntity::cashCode = cashCodes;
-    }
-
-    vector<consumerEntity> &getConsumerA() {
-        return consumerA;
-    }
-
-    void setConsumerA(vector<consumerEntity> &consumerAs) {
-        cashierEntity::consumerA = consumerAs;
     }
 };
 
@@ -297,6 +333,7 @@ public:
                 for (auto &i: consumer.getConOrder()) {
                     if (i.dishOrder.dishCode == now_code) {
                         i.setStatus("已做");
+                        consumer.setTotalMoney(consumer.getTotalMoney()+i.dishOrder.dishPrice*i.dishCount);
                         finishedDishes.push_back(i);
                     }
                 }
@@ -310,6 +347,17 @@ public:
         cout << endl;
         for (auto &i: finishedDishes) {
             cout << i.dishOrder.dishName << "\t" << i.dishCount << endl;
+        }
+    }
+
+    static void viewAllUnfinishedDishes(){
+        cout<<endl;
+        for(auto & i : allConsumer){
+            for(const auto& j : i.getConOrder()){
+                if(j.status=="待做"){
+                    cout<<j.dishOrder.dishName<<"\t"<<j.dishCount<<endl;
+                }
+            }
         }
     }
 
@@ -508,43 +556,9 @@ void show_panel() {
         int selectNumber = 0;
         cin >> selectNumber;
         if (selectNumber == 1) {
-            consumerEntity consumer;
-            default_random_engine e;
-            uniform_int_distribution<int> u(0, 100);
-            e.seed(time(nullptr));
-            consumer.setConCode(u(e));
-            int look = allTable.size();
-            int j;
-            for (j = 0; j < look; j++) {
-                auto pos = allTable.find(j + 1);
-                if (pos->second == 0) {
-                    break;
-                }
-            }
-            if (j == look) {
-                cout << "There is no seat now!\n";
-                continue;
-            }
-            for (int i = 0; i < look; i++) {
-                auto pos = allTable.find(i + 1);
-                if (pos->second == 0) {
-                    cout << pos->first << " ";
-                }
-            }
-            cout << "\nPlease select the seat you would like to eat:\n";
-            int tableNumber;   //消费者座位号
-            cin >> tableNumber;
-            consumer.setConTable(tableNumber);
-            allTable[tableNumber] = 1;
-            cout << "Please enter number of diners:\n";
-            int number;   //消费者人数
-            cin >> number;
-            consumer.setConNumber(number);
-            consumer = consumerEntity::makeOrder(consumer);   //点餐
-            cout << consumer;
+            consumerShow();
         } else if (selectNumber == 2) {
-            system("cls");
-            cout << "hello";
+            cashierShow();
         } else if (selectNumber == 3) {
             while (true) {
                 cout << "1. go for the dishes.\n2. Check out the dishes made today.\n-1. Exit.\n";
@@ -586,6 +600,83 @@ void adminShow() {
         } else if (select==3){
             viewAllDishes();
         } else {
+            break;
+        }
+    }
+}
+
+void consumerShow(){
+    while(true){
+        cout<<"1. Order food.\n2. view my order.\n-1. EXIT\n";
+        int flag;
+        cin>>flag;
+        if(flag==1){
+            consumerEntity consumer;
+            default_random_engine e;
+            uniform_int_distribution<int> u(0, 1000);
+            e.seed(time(nullptr));
+            consumer.setConCode(u(e));
+            int look = allTable.size();
+            int j;
+            for (j = 0; j < look; j++) {
+                auto pos = allTable.find(j + 1);
+                if (pos->second == 0) {
+                    break;
+                }
+            }
+            if (j == look) {
+                cout << "There is no seat now!\n";
+                continue;
+            }
+            for (int i = 0; i < look; i++) {
+                auto pos = allTable.find(i + 1);
+                if (pos->second == 0) {
+                    cout << pos->first << " ";
+                }
+            }
+            cout << "\nPlease select the seat you would like to eat:\n";
+            int tableNumber;   //消费者座位号
+            cin >> tableNumber;
+            consumer.setConTable(tableNumber);
+            allTable[tableNumber] = 1;
+            cout << "Please enter number of diners:\n";
+            int number;   //消费者人数
+            cin >> number;
+            consumer.setConNumber(number);
+            consumer = consumerEntity::makeOrder(consumer);   //点餐
+        }else if (flag==2){
+            cout<<"please enter the table number:";
+            int table;
+            cin>>table;
+            for(auto & i : allConsumer){
+                if(i.getConTable()==table){
+                    cout<<i;
+                }
+            }
+        } else{
+            break;
+        }
+    }
+}
+
+void cashierShow(){
+    while(true){
+        cout<<"\n1. checkout order.\n2. See today's total revenue.\n3. Statistics on today's dishes.\n-1. EXIT\n";
+        int flag;
+        cin>>flag;
+        if(flag==1){
+            cout<<"\nPlease enter the table number you want to checkout:";
+            int tableCode;
+            cin>>tableCode;
+            cashierEntity::checkoutByTable(tableCode);
+        }else if(flag==2){
+            cout<<"total consumers:"<<alreadyConsumer.size()<<"\ntoday's total revenue:"<<cashierEntity::countEarning()<<endl;
+        }else if(flag==3){
+            cout<<"Finished:\n";
+            cooksEntity::viewAllFinishedDishes();
+            cout<<"Unfinished:\n";
+            cooksEntity::viewAllUnfinishedDishes();
+        }else{
             break;
         }
     }
