@@ -13,6 +13,8 @@
 #include <ctime>
 #include <map>
 #include <iomanip>
+#include <algorithm>
+#include <iterator>
 using namespace std;
 
 #endif //RES_ORDER_SYSTEM_HEADER_H
