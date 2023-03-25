@@ -24,6 +24,7 @@ vector<orderList> finishedDishes;  //已完成的所有菜品
 //global functions
 void init_menu();  //初始化菜单和座位
 void show_panel();  //总展示面板
+void bossShow();    //老板展示界面
 void adminShow();   //系统管理员界面
 void consumerShow(); //用户界面
 void cashierShow();  //收银员界面
@@ -108,7 +109,7 @@ public:
         this->conStatus = 0;
         this->isCheckout = 0;
         this->totalMoney = 0;
-        this->conRemark=0;
+        this->conRemark = 0;
         this->conNumber = 0;
     }
 
@@ -117,6 +118,7 @@ public:
         vector<order> new_order;  //用户菜单
         double amount = 0;
         while (true) {
+            order forOrder1;
             cout << "Please select the dishes you want to eat:(-1 EXIT)\n";
             int code = 0;
             cin >> code;
@@ -129,23 +131,27 @@ public:
             cout << "Please select the beverage:(0 Skip)\n";
             int bevCode;
             cin >> bevCode;
+            for (auto k: list) {
+                if (k.dishCode == code) {
+                    forOrder1.dishOrder = k;
+                    forOrder1.dishCount = count;
+                }
+            }
             if (bevCode != 0) {
                 cout << "Please enter the quantity you need:\n";
                 int bevCount;
                 cin >> bevCount;
-                order forOrder1;
-                forOrder1.dishOrder = list[code - 1];
-                forOrder1.dishCount = count;
-                forOrder1.bevInfo = bevList[bevCode - 1];
-                amount = amount + bevList[bevCode - 1].bevPrice * bevCount;
-                bevList[bevCode - 1].bevStock = bevList[bevCode - 1].bevStock - bevCount;
-                forOrder1.bevCount = bevCount;
+                for (auto x: bevList) {
+                    if (x.bevCode == bevCode) {
+                        forOrder1.bevInfo = x;
+                        amount = amount + x.bevPrice * bevCount;
+                        x.bevStock = x.bevStock - bevCount;
+                        forOrder1.bevCount = bevCount;
+                    }
+                }
                 new_order.push_back(forOrder1);
             } else {
-                order forOrder;
-                forOrder.dishOrder = list[code - 1];
-                forOrder.dishCount = count;
-                new_order.push_back(forOrder);
+                new_order.push_back(forOrder1);
             }
         }
         consumer.setConOrder(new_order);
@@ -154,7 +160,7 @@ public:
     }
 
     friend ostream &operator<<(ostream &os, consumerEntity &entity) {
-        os << "\nUser number: " << entity.conCode <<"\t"<<entity.getConStatus()<<"\t"<<entity.getConRemark()<< endl;
+        os << "\nUser number: " << entity.conCode << endl;
         os << "User table: " << entity.conTable << "\t\t Number of diners：" << entity.conNumber << endl;
         os << "dish name" << "\t" << "amount \n";
         for (auto &j: entity.conOrder) {
@@ -355,14 +361,12 @@ public:
     }
 
     static void viewAllFinishedDishes() {
-        cout << endl;
         for (auto &i: finishedDishes) {
             cout << i.dishOrder.dishName << "\t" << i.dishCount << endl;
         }
     }
 
     static void viewAllUnfinishedDishes() {
-        cout << endl;
         for (auto &i: allConsumer) {
             for (const auto &j: i.getConOrder()) {
                 if (j.status == "待做") {
@@ -399,7 +403,7 @@ public:
         for (auto &i: allConsumer) {
             if (i.getConTable() == tableCode) {
                 while (true) {
-                    cout<<i;
+                    cout << i;
                     cout << "1. deliver dishes.\n2. add dishes.\n-1. EXIT.\n";
                     int code;
                     cin >> code;
@@ -432,7 +436,8 @@ public:
                         viewAllDishes();
                         double amount = 0;
                         while (true) {
-                            cout << "Please select the dishes you want to eat:(-1 EXIT)\n";
+                            order forOrder1;
+                            cout << "Please select the dishes you want to add:(-1 EXIT)\n";
                             int code1 = 0;
                             cin >> code1;
                             if (code1 == -1) {
@@ -444,24 +449,28 @@ public:
                             cout << "Please select the beverage:(0 Skip)\n";
                             int bevCode;
                             cin >> bevCode;
+                            for (auto k: list) {
+                                if (k.dishCode == code1) {
+                                    forOrder1.dishOrder = k;
+                                    forOrder1.dishCount = count;
+                                }
+                            }
                             if (bevCode != 0) {
                                 cout << "Please enter the quantity you need:\n";
                                 int bevCount;
                                 cin >> bevCount;
-                                order forOrder1;
-                                forOrder1.dishOrder = list[code1 - 1];
-                                forOrder1.dishCount = count;
-                                forOrder1.bevInfo = bevList[bevCode - 1];
-                                amount = amount + bevList[bevCode - 1].bevPrice * bevCount;
-                                bevList[bevCode - 1].bevStock = bevList[bevCode - 1].bevStock - bevCount;
-                                forOrder1.bevCount = bevCount;
+                                for (auto x: bevList) {
+                                    if (x.bevCode == bevCode) {
+                                        forOrder1.bevInfo = x;
+                                        amount = amount + x.bevPrice * bevCount;
+                                        x.bevStock = x.bevStock - bevCount;
+                                        forOrder1.bevCount = bevCount;
+                                    }
+                                }
                                 i.getConOrder().push_back(forOrder1);
                                 i.setTotalMoney(i.getTotalMoney() + amount);
                             } else {
-                                order forOrder;
-                                forOrder.dishOrder = list[code - 1];
-                                forOrder.dishCount = count;
-                                i.getConOrder().push_back(forOrder);
+                                i.getConOrder().push_back(forOrder1);
                             }
                             i.setConStatus(0);
                         }
@@ -501,6 +510,8 @@ public:
 //餐厅老板
 class resOwner {
 private:
+    int bossCode;
+public:
 
 };
 
@@ -703,8 +714,7 @@ void show_panel() {
         } else if (selectNumber == 4) {
             waiterShow();
         } else if (selectNumber == 5) {
-            system("cls");
-            cout << "hello_4";
+            bossShow();
         } else if (selectNumber == 6) {
             adminShow();
         } else {
@@ -713,6 +723,29 @@ void show_panel() {
         }
     } while (true);
 };
+
+void bossShow(){
+    while(true){
+        cout<<"1. view menu info.\n2. View income, expenses.\n3. View all consumer orders today.\n-1. EXIT.\n";
+        int flag;
+        cin>>flag;
+        if(flag==1){
+            viewAllDishes();
+        }else if(flag==2){
+            cout << "total consumers:" << alreadyConsumer.size() << "\ntoday's total revenue:"
+                 << cashierEntity::countEarning() << endl;
+        }else if(flag==3){
+            cout<<"正在就餐的消费者订单：\n";
+            all_notCheckout_orders();
+            cout<<"已经结账的消费者订单：\n";
+            for(auto i :alreadyConsumer){
+                cout<<i;
+            }
+        } else{
+            break;
+        }
+    }
+}
 
 void adminShow() {
     while (true) {
@@ -724,20 +757,21 @@ void adminShow() {
             viewAllDishes();
             cout << "============================================\n";
             while (true) {
-                cout<<endl;
-                cout<< "1. menu entry.\n2. beverage entry.\n3. delete dishes.\n4. delete beverage.\n5. update dish.\n6. update beverage\n-1. EXIT.\n";
+                cout << endl;
+                cout
+                        << "1. menu entry.\n2. beverage entry.\n3. delete dishes.\n4. delete beverage.\n5. update dish.\n6. update beverage\n-1. EXIT.\n";
                 int flag_2;
                 cin >> flag_2;
                 if (flag_2 == 1) {
-                    cout<<endl;
+                    cout << endl;
                     systemAdmin::menu_entry();
-                    cout<<endl;
+                    cout << endl;
                 } else if (flag_2 == 2) {
-                    cout<<endl;
+                    cout << endl;
                     systemAdmin::beverage_entry();
-                    cout<<endl;
+                    cout << endl;
                 } else if (flag_2 == 3) {
-                    cout<<endl;
+                    cout << endl;
                     viewDishes();
                     cout << "Please enter the serial number you want to delete:";
                     int deleteDish;
@@ -750,9 +784,9 @@ void adminShow() {
                             break;
                         }
                     }
-                    cout<<endl;
+                    cout << endl;
                 } else if (flag_2 == 4) {
-                    cout<<endl;
+                    cout << endl;
                     viewBeverage();
                     cout << "Please enter the serial number you want to delete:";
                     int deleteBev;
@@ -765,11 +799,11 @@ void adminShow() {
                             break;
                         }
                     }
-                    cout<<endl;
+                    cout << endl;
                 } else if (flag_2 == 5) {
 
                 } else if (flag_2 == 6) {
-                    cout<<endl;
+                    cout << endl;
                     viewBeverage();
                     cout << "Please input the serial number:";
                     int bevCode;
@@ -794,19 +828,19 @@ void adminShow() {
                             break;
                         }
                     }
-                    cout<<endl;
+                    cout << endl;
                 } else {
                     break;
                 }
             }
         } else if (select == 2) {
-            cout<<endl;
+            cout << endl;
             systemAdmin::table_info_entry();
-            cout<<endl;
+            cout << endl;
         } else if (select == 3) {
-            cout<<endl;
+            cout << endl;
             viewAllDishes();
-            cout<<endl;
+            cout << endl;
         } else {
             break;
         }
@@ -815,7 +849,7 @@ void adminShow() {
 
 void consumerShow() {
     while (true) {
-        cout<<endl;
+        cout << endl;
         cout << "1. Order food.\n2. view my order.\n-1. EXIT\n";
         int flag;
         cin >> flag;
@@ -854,9 +888,9 @@ void consumerShow() {
             consumer.setConNumber(number);
             consumer = consumerEntity::makeOrder(consumer);   //点餐
             allConsumer.push_back(consumer);
-            cout<<endl;
+            cout << endl;
         } else if (flag == 2) {
-            cout<<endl;
+            cout << endl;
             cout << "please enter the table number:";
             int table;
             cin >> table;
@@ -865,7 +899,7 @@ void consumerShow() {
                     cout << i;
                 }
             }
-            cout<<endl;
+            cout << endl;
         } else {
             break;
         }
@@ -874,31 +908,30 @@ void consumerShow() {
 
 void cashierShow() {
     while (true) {
-        cout<<endl;
+        cout << endl;
         cout << "\n1. checkout order.\n2. See today's total revenue.\n3. Statistics on today's dishes.\n-1. EXIT\n";
         int flag;
         cin >> flag;
         if (flag == 1) {
-            cout<<endl;
+            cout << endl;
             cout << "\nPlease enter the table number you want to checkout:";
             int tableCode;
             cin >> tableCode;
             cashierEntity::checkoutByTable(tableCode);
-            cout<<endl;
+            cout << endl;
         } else if (flag == 2) {
-            cout<<endl;
+            cout << endl;
             cout << "total consumers:" << alreadyConsumer.size() << "\ntoday's total revenue:"
                  << cashierEntity::countEarning() << endl;
-            cout<<endl;
+            cout << endl;
         } else if (flag == 3) {
-            cout<<endl;
+            cout << endl;
             cout << "Finished:\n";
-            cout<<endl;
             cooksEntity::viewAllFinishedDishes();
+            cout << endl;
             cout << "Unfinished:\n";
-            cout<<endl;
             cooksEntity::viewAllUnfinishedDishes();
-            cout<<endl;
+            cout << endl;
         } else {
             break;
         }
@@ -907,28 +940,28 @@ void cashierShow() {
 
 void waiterShow() {
     while (true) {
-        cout<<endl;
+        cout << endl;
         cout << "\n1. view all orders.\n2. Deliver food or add dishes.\n-1. EXIT\n";
         int flag_1;
         cin >> flag_1;
         if (flag_1 == 1) {
-            cout<<endl;
+            cout << endl;
             all_notCheckout_orders();
-            cout<<endl;
+            cout << endl;
         } else if (flag_1 == 2) {
-            cout<<endl;
+            cout << endl;
             cout << "\nPlease enter the table number you want to serve:";
             int tableNumber;
             cin >> tableNumber;
             waiterEntity::deliverServe(tableNumber);
-            cout<<endl;
+            cout << endl;
         } else {
             break;
         }
     }
 }
 
-void all_notCheckout_orders(){
+void all_notCheckout_orders() {
     for (auto i: allConsumer) {
         if (i.getIsCheckout() == 0) {
             cout << i;
@@ -938,7 +971,7 @@ void all_notCheckout_orders(){
 
 void all_unfinished_orders() {
     for (auto i: allConsumer) {
-        if (i.getConStatus() == 0&&i.getIsCheckout() == 0) {
+        if (i.getConStatus() == 0 && i.getIsCheckout() == 0) {
             cout << i;
         }
     }
