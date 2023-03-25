@@ -24,14 +24,13 @@ vector<orderList> finishedDishes;  //已完成的所有菜品
 //global functions
 void init_menu();  //初始化菜单和座位
 void show_panel();  //总展示面板
-void bossShow();    //老板展示界面
 void adminShow();   //系统管理员界面
 void consumerShow(); //用户界面
 void cashierShow();  //收银员界面
 void waiterShow();   //服务员界面
 void all_notCheckout_orders(); //展示所有未结账的消费者订单信息
 void all_unfinished_orders();  //展示未结账并且有菜品未做完的消费者订单信息
-void all_notDeliver_orders();  //展示有菜品未配送的消费者订单信息
+//void all_notDeliver_orders();  //展示有菜品未配送的消费者订单信息
 void viewAllDishes();//菜单
 void viewDishes();  //查看所有菜品信息
 void viewBeverage(); //查看所有酒水信息
@@ -187,9 +186,9 @@ public:
         cout << endl;
     }
 
-    int getConCode() {
-        return conCode;
-    }
+//    int getConCode() {
+//        return conCode;
+//    }
 
     void setConCode(int conCodes) {
         consumerEntity::conCode = conCodes;
@@ -512,7 +511,28 @@ class resOwner {
 private:
     int bossCode;
 public:
-
+    static void bossShow(){
+        while(true){
+            cout<<"1. view menu info.\n2. View income, expenses.\n3. View all consumer orders today.\n-1. EXIT.\n";
+            int flag;
+            cin>>flag;
+            if(flag==1){
+                viewAllDishes();
+            }else if(flag==2){
+                cout << "total consumers:" << alreadyConsumer.size() << "\ntoday's total revenue:"
+                     << cashierEntity::countEarning() << endl;
+            }else if(flag==3){
+                cout<<"正在就餐的消费者订单：\n";
+                all_notCheckout_orders();
+                cout<<"已经结账的消费者订单：\n";
+                for(auto i :alreadyConsumer){
+                    cout<<i;
+                }
+            } else{
+                break;
+            }
+        }
+    }
 };
 
 //系统管理员
@@ -714,7 +734,7 @@ void show_panel() {
         } else if (selectNumber == 4) {
             waiterShow();
         } else if (selectNumber == 5) {
-            bossShow();
+            resOwner::bossShow();
         } else if (selectNumber == 6) {
             adminShow();
         } else {
@@ -723,29 +743,6 @@ void show_panel() {
         }
     } while (true);
 };
-
-void bossShow(){
-    while(true){
-        cout<<"1. view menu info.\n2. View income, expenses.\n3. View all consumer orders today.\n-1. EXIT.\n";
-        int flag;
-        cin>>flag;
-        if(flag==1){
-            viewAllDishes();
-        }else if(flag==2){
-            cout << "total consumers:" << alreadyConsumer.size() << "\ntoday's total revenue:"
-                 << cashierEntity::countEarning() << endl;
-        }else if(flag==3){
-            cout<<"正在就餐的消费者订单：\n";
-            all_notCheckout_orders();
-            cout<<"已经结账的消费者订单：\n";
-            for(auto i :alreadyConsumer){
-                cout<<i;
-            }
-        } else{
-            break;
-        }
-    }
-}
 
 void adminShow() {
     while (true) {
