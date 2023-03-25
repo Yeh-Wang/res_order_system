@@ -112,6 +112,9 @@ public:
         this->conNumber = 0;
     }
 
+    /**
+     * 顾客进行点单，并生成订单
+     */
     static consumerEntity makeOrder(consumerEntity consumer) {
         viewAllDishes();
         vector<order> new_order;  //用户菜单
@@ -158,6 +161,10 @@ public:
         return consumer;
     }
 
+    /**
+     * 重载输出
+     * @param entity 消费者实体类
+     */
     friend ostream &operator<<(ostream &os, consumerEntity &entity) {
         os << "\nUser number: " << entity.conCode << endl;
         os << "User table: " << entity.conTable << "\t\t Number of diners：" << entity.conNumber << endl;
@@ -186,9 +193,9 @@ public:
         cout << endl;
     }
 
-//    int getConCode() {
-//        return conCode;
-//    }
+    int getConCode() {
+        return conCode;
+    }
 
     void setConCode(int conCodes) {
         consumerEntity::conCode = conCodes;
@@ -318,6 +325,9 @@ public:
         this->cookCode = 0;
     }
 
+    /**
+     * 厨师查看进行中的消费者订单
+     */
     static void viewOrders() {
         all_unfinished_orders();
         cout << "Please select the seat number to complete the meal:(-1 EXIT)\n";
@@ -341,6 +351,10 @@ public:
         }
     }
 
+    /**
+     * 厨师做菜
+     * @param consumer 厨师要服务的消费者实体
+     */
     static void doDishes(consumerEntity &consumer) {
         while (true) {
             cout << "Please enter the serial number of the finished dish:(-1 EXIT)\n";
@@ -359,12 +373,18 @@ public:
         }
     }
 
+    /**
+     * 查看厨师已经做完的菜品
+     */
     static void viewAllFinishedDishes() {
         for (auto &i: finishedDishes) {
             cout << i.dishOrder.dishName << "\t" << i.dishCount << endl;
         }
     }
 
+    /**
+     * 查看厨师没有完成的菜品
+     */
     static void viewAllUnfinishedDishes() {
         for (auto &i: allConsumer) {
             for (const auto &j: i.getConOrder()) {
@@ -398,6 +418,10 @@ public:
         this->remarks = "";
     }
 
+    /**
+     * 服务员对指定桌号的顾客进行服务
+     * @param tableCode 面向的的消费者桌号
+     */
     static void deliverServe(int tableCode) {
         for (auto &i: allConsumer) {
             if (i.getConTable() == tableCode) {
@@ -511,6 +535,10 @@ class resOwner {
 private:
     int bossCode;
 public:
+
+    /**
+     * 老板界面
+     */
     static void bossShow(){
         while(true){
             cout<<"1. view menu info.\n2. View income, expenses.\n3. View all consumer orders today.\n-1. EXIT.\n";
